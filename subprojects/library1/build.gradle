@@ -1,0 +1,23 @@
+plugins {
+	id "java"
+  id "maven-publish"
+	id "com.jfrog.bintray" version "1.8.4"
+}
+
+// Defines a configuration for the MarkLogic modules; used by the modulesZip task below
+configurations {
+	modules
+}
+
+task modulesJar(type: Jar) {
+	from("src/main/ml-modules") {
+		into("library1/ml-modules")
+	}
+	destinationDir file("../../libjars")
+	baseName "library1"
+}
+
+// Define the artifacts, in addition to the jar registered by the "java" plugin
+artifacts {
+	modules modulesJar
+}

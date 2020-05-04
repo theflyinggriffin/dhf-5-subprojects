@@ -1,0 +1,9 @@
+
+plugins {
+      // Gradle Properties plugin
+      id 'net.saliman.properties' version '1.4.6'
+
+      // Data Hub plugin
+      id 'com.marklogic.ml-data-hub' version '5.2.1'
+      id "com.dorongold.task-tree" version "1.5"
+  }

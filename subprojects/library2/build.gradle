@@ -1,0 +1,57 @@
+plugins {
+	id "java"
+  	id "maven-publish"
+	id "com.jfrog.bintray" version "1.8.4"
+	id "com.marklogic.ml-gradle" version "3.17.0"
+}
+
+// Defines a configuration for the MarkLogic modules; used by the modulesZip task below
+configurations {
+	modules
+}
+
+task modulesJar (type: Jar) {
+	from("src/main/ml-modules") {
+		into("library2/ml-modules")
+	}
+	baseName "library2"
+}
+
+// Define the artifacts, in addition to the jar registered by the "java" plugin
+artifacts {
+	modules modulesJar
+}
+
+dependencies {
+    mlBundle files('../../libjars/library1-1.0.1.jar')
+ }
+ 
+ task copyBundles() {
+ 	def bundleDir = new File("$buildDir/mlBundle")
+ 	def depDir = new File("src/main/ml-modules/root/deps")
+
+ 	delete {
+ 		delete depDir
+ 	}
+    
+    for (dir in bundleDir.listFiles()) {
+    	copy {
+            from "$dir/ml-modules/root"
+            into "$depDir/" + dir.getName()
+        }
+        delete {
+        	delete "$dir/ml-modules"
+        }
+    }
+}
+
+task deploy (type: Copy){
+	from modulesJar
+	into "../../libjars"
+}
+
+mlPrepareBundles.finalizedBy("copyBundles")
+modulesJar.dependsOn("mlPrepareBundles", "copyBundles")
+deploy.dependsOn("modulesJar")
+
+ 

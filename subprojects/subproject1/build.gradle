@@ -1,0 +1,29 @@
+plugins { 
+	id "com.marklogic.ml-gradle" version "3.17.0" 
+}
+
+dependencies {
+    mlBundle files('../../libjars/library1-1.0.0.jar')
+    mlBundle files('../../libjars/library2-1.0.0.jar')
+ }
+ 
+ task copyBundles() {
+ 	def bundleDir = new File("$buildDir/mlBundle")
+ 	def depDir = new File("src/main/ml-modules/root/${project.name}/deps")
+
+ 	delete {
+ 		delete depDir
+ 	}
+    
+    for (dir in bundleDir.listFiles()) {
+    	copy {
+            from "$dir/ml-modules/root"
+            into "$depDir/" + dir.getName()
+        }
+        delete {
+        	delete "$dir/ml-modules"
+        }
+    }
+}
+
+mlPrepareBundles.finalizedBy("copyBundles")
